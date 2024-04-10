@@ -8,14 +8,11 @@ exports.handleRefreshToken = async (req, res) => {
 
   const refreshToken = cookies.jwt;
 
-  console.log("point 1");
   try {
     const user = await User.findOne({ refreshToken });
-    console.log("point 2" + user);
     if (!user) {
       return res.sendStatus(403);
     }
-    console.log("point 3");
     jwt.verify(
       refreshToken,
       process.env.REFRESH_TOKEN_SECRET,
@@ -34,7 +31,7 @@ exports.handleRefreshToken = async (req, res) => {
             },
           },
           process.env.ACCESS_TOKEN_SECRET,
-          { expiresIn: "30s" }
+          { expiresIn: "1d" }
         );
 
         res.json({ accessToken });
