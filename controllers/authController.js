@@ -51,8 +51,37 @@ exports.login = async (req, res) => {
     if (!validPassword) {
       return res.status(401).json({ error: "Invalid username or password" });
     }
+    const roles = Object.values(user.roles);
+    const accessToken = jwt.sign(
+      {
+        userInfo: {
+          username: username,
+          roles: roles,
+        },
+      },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "1d" }
+    );
+    const refreshToken = jwt.sign(
+      {
+        username: username,
+      },
+      process.env.REFRESH_TOKEN_SECRET,
+      { expiresIn: "1d" }
+    );
 
-    res.status(200).json({ message: "login success" });
+    const otherUsers = await User.find({ username: { $ne: user.username } });
+    const currentUser = { ...user.toObject(), refreshToken };
+    const updatedUsers = [...otherUsers, currentUser];
+    await fsPromises.writeFile(
+      path.join(__dirname, "..", "model", "users.json"),
+      JSON.stringify(updatedUsers)
+    );
+    res.cookie("jwt", refreshToken, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+    res.status(200).json({ accessToken });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -81,7 +110,7 @@ exports.UpdateUsers = async (req, res) => {
   if (req.body?.user_location)
     userDetail.user_location = req.body.user_location;
   userDetail.updateDate = Date.now();
-  res.json({ message: "user updated successfully" });
+  res.json(userDetail);
   userDetail.save();
 };
 

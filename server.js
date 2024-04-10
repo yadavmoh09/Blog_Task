@@ -6,7 +6,9 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 const connectDB = require("./config/dbConn");
-const authRoutes = require("./routes/auth");
+const authRoutes = require("./routes/auth"); // Import authRoutes
+const refreshRoutes = require("./routes/refresh");
+const logOutRoutes = require("./routes/logout");
 
 const PORT = process.env.PORT || 3500;
 
@@ -19,6 +21,9 @@ app.use(express.urlencoded({ extended: false }));
 // built-in middleware for json
 app.use(express.json());
 
+//middleware for cookies
+app.use(cookieParser());
+
 //serve static files
 app.use("/", express.static(path.join(__dirname, "/public")));
 
@@ -26,6 +31,8 @@ app.use("/", express.static(path.join(__dirname, "/public")));
 app.use("/auth", authRoutes);
 app.use("/", require("./routes/root"));
 app.use("/post", require("./routes/postAuth"));
+app.use("/refresh", refreshRoutes);
+app.use("/logout", logOutRoutes);
 
 app.all("*", (req, res) => {
   res.status(404);
