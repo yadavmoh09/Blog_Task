@@ -1,0 +1,39 @@
+{
+  "users": {
+    "username": "yadavmoh87",
+    "email": "mohit.yadav@novigosolutions.com",
+    "password": "mohit@8756312",
+    "role": {
+      "Admin": 5150
+    },
+    "security_question": "who is your bes friend",
+    "security_answer": "mohit",
+    "phone_number": 9893426153,
+    "interested_in": ["game", "coding"],
+    "user_location": "Indore"
+  },
+  "posts": [
+    {
+      "username": "yadavmoh09",
+      "title": "Sample Post",
+      "content": {
+        "media_location": ["hello.jpg", "hello2.mp4"],
+        "text": "Hello friends"
+      },
+      "location": "indore india",
+      "author_id": "0123456789abcdef01234174",
+      "createDate": "2022-10-12T00:00:00Z",
+      "updateDate": "2022-10-12T00:00:00Z",
+      "tags": ["sample", "test"],
+      "comments": [
+        {
+          "comment_id": "0123456789abcdef01234879",
+          "user_id": "0123456789abcdef01234789",
+          "content": "This is a sample comment.",
+          "createDate": "2022-10-12T00:00:00Z",
+          "updateDate": "2022-10-12T00:00:00Z"
+        }
+      ]
+    }
+  ]
+}
