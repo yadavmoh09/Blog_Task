@@ -9,7 +9,11 @@ router.post(
   "/",
   verifyJWT,
   verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor),
-  registerController.createDocuments
+  registerController.createPost
 );
+router.get("/getAllPost", registerController.getAllPost);
+router.get("/getPost", registerController.getPostByID);
+router.put("/updatePost", registerController.updatePost);
+router.delete("/deletePost", registerController.deleteAllPost);
 
 module.exports = router;

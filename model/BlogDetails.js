@@ -32,6 +32,10 @@ const postSchema = new Schema({
     type: String,
     required: true,
   },
+  post_id: {
+    type: String,
+    required: true,
+  },
   title: {
     type: String,
     required: true,
@@ -49,10 +53,6 @@ const postSchema = new Schema({
   location: {
     type: String,
     required: false,
-  },
-  author_id: {
-    type: String,
-    required: true,
   },
   createDate: {
     type: Date,
@@ -74,7 +74,6 @@ const postSchema = new Schema({
     type: Number,
     default: 0,
   },
-  comments: [commentSchema],
 });
 
 // Export each schema as a Mongoose model
