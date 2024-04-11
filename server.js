@@ -33,6 +33,7 @@ app.use("/", require("./routes/root"));
 app.use("/post", require("./routes/postAuth"));
 app.use("/refresh", refreshRoutes);
 app.use("/logout", logOutRoutes);
+app.use("/comment", require("./routes/commentAuth"));
 
 app.all("*", (req, res) => {
   res.status(404);

@@ -8,11 +8,15 @@ const commentSchema = new Schema({
     type: String,
     default: () => uuidv4(),
   },
-  user_id: {
+  username: {
+    type: String,
+    requried: true,
+  },
+  post_id: {
     type: String,
     required: true,
   },
-  content: {
+  text: {
     type: String,
     required: true,
   },
