@@ -11,9 +11,29 @@ router.post(
   verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor),
   registerController.createPost
 );
-router.get("/getAllPost", registerController.getAllPost);
-router.get("/getPost", registerController.getPostByID);
-router.put("/updatePost", registerController.updatePost);
-router.delete("/deletePost", registerController.deleteAllPost);
+router.get(
+  "/getAllPost",
+  verifyJWT,
+  verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor, ROLES_LIST.User),
+  registerController.getAllPost
+);
+router.get(
+  "/getPost",
+  verifyJWT,
+  verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor, ROLES_LIST.User),
+  registerController.getPostByID
+);
+router.put(
+  "/updatePost",
+  verifyJWT,
+  verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor),
+  registerController.updatePost
+);
+router.delete(
+  "/deletePost",
+  verifyJWT,
+  verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor),
+  registerController.deleteAllPost
+);
 
 module.exports = router;
