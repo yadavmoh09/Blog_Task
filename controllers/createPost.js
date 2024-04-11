@@ -8,12 +8,6 @@ const router = express.Router();
 const blogDetailSchema = require("../model/BlogDetails");
 const { post } = require("../routes/postAuth");
 
-// Middleware to set updateDate before saving
-const setUpdateDate = (req, res, next) => {
-  req.body.updateDate = new Date();
-  next();
-};
-
 // Route to create users, posts, and categories
 const createPost = async (req, res) => {
   try {
@@ -21,19 +15,23 @@ const createPost = async (req, res) => {
     // Create posts
     if (posts && Array.isArray(posts)) {
       // Iterate over each post asynchronously
+      const cookies = req.cookies;
+      if (!cookies?.jwt) return res.sendStatus(401);
+      const refreshToken = cookies.jwt;
+      const userLogin = await User.findOne({ refreshToken });
       await Promise.all(
         posts.map(async (post) => {
           // Create each post
           try {
             // Use findOne to find a user by username
             const user = await User.findOne({
-              username: post.username,
+              username: userLogin.username,
             });
             if (user === null) {
               throw new Error("User is not available...");
             }
             await blogDetailSchema.Post.create({
-              username: post.username,
+              username: userLogin.username,
               title: post.title,
               content: post.content,
               post_id: uuidv4(),
@@ -137,7 +135,6 @@ const deleteAllPost = async (req, res) => {
 
 // Apply middleware to set updateDate before sav
 module.exports = {
-  setUpdateDate,
   createPost,
   getAllPost,
   getPostByID,
