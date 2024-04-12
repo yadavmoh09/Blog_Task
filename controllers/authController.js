@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const fsPromises = require("fs").promises;
 const path = require("path");
+const BlogDetails = require("../model/BlogDetails");
 
 exports.register = async (req, res) => {
   const UserDetail = req.body;
@@ -123,17 +124,25 @@ exports.DeleteUser = async (req, res) => {
 
     // If user not found, return appropriate response
     if (!userDetail) {
-      return res.status(204).json({ message: "User not found." });
+      return res.status(404).json({ error: "User not found." });
     }
 
     // Find all posts related to the user
-    const blogDetailSchema = require("../model/BlogDetails");
-    const postDetails = await blogDetailSchema.Post.find({ username }).exec();
+    const postDetails = await BlogDetails.Post.find({ username }).exec();
 
     // If posts are found, delete each post
     if (postDetails.length > 0) {
       await Promise.all(
         postDetails.map(async (post) => {
+          const commentDetails = await BlogDetails.Comment.find({
+            post_id: post.post_id,
+          }).exec();
+
+          await Promise.all(
+            commentDetails.map(async (comment) => {
+              await comment.deleteOne();
+            })
+          );
           await post.deleteOne();
         })
       );

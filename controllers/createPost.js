@@ -109,29 +109,85 @@ const updatePost = async (req, res) => {
   }
 };
 
+// const deleteAllPost = async (req, res) => {
+//   const { username } = req.body;
+//   try {
+//     if (!username) return res.status(400).json({ error: "user name required" });
+//     const foundPost = await blogDetailSchema.Post.find({ username });
+//     if (!foundPost || foundPost.length === 0)
+//       return res.status(400).json({ error: `post not found for ${username}` });
+//     const numberOfPostFound = foundPost.length;
+//     // If posts are found, delete each post
+//     if (foundPost.length > 0) {
+//       await Promise.all(
+//         postDetails.map(async (post) => {
+//           const commentDetails = await blogDetailSchema.Comment.find({
+//             post_id: post.post_id,
+//           }).exec();
+
+//           await Promise.all(
+//             commentDetails.map(async (comment) => {
+//               await comment.deleteOne();
+//             })
+//           );
+//           await post.deleteOne();
+//         })
+//       );
+//     }
+//     res.status(200).json({
+//       message: `${numberOfPostFound} post and related comments deleted successfully`,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ error: error });
+//   }
+// };
+
 const deleteAllPost = async (req, res) => {
   const { username } = req.body;
   try {
-    if (!username) return res.status(400).json({ error: "user name required" });
-    const foundPost = await blogDetailSchema.Post.find({ username });
-    if (!foundPost || foundPost.length === 0)
-      return res.status(400).json({ error: `post not found for ${username}` });
-    const numberOfPostFound = foundPost.length;
-    // If posts are found, delete each post
-    if (foundPost.length > 0) {
-      await Promise.all(
-        foundPost.map(async (post) => {
-          await post.deleteOne();
-        })
-      );
-    }
-    res
-      .status(200)
-      .json({ message: `${numberOfPostFound} post deleted successfully` });
+    if (!username)
+      return res.status(400).json({ error: "Username is required." });
+
+    const foundPosts = await blogDetailSchema.Post.find({ username });
+
+    if (!foundPosts || foundPosts.length === 0)
+      return res
+        .status(404)
+        .json({ error: `No posts found for user ${username}.` });
+
+    const numberOfPostsFound = foundPosts.length;
+
+    // If posts are found, delete each post and its related comments
+    await Promise.all(
+      foundPosts.map(async (post) => {
+        const commentDetails = await blogDetailSchema.Comment.find({
+          post_id: post.post_id,
+        }).exec();
+
+        // Delete each comment related to the post
+        await Promise.all(
+          commentDetails.map(async (comment) => {
+            await comment.deleteOne();
+          })
+        );
+
+        // Delete the post itself
+        await post.deleteOne();
+      })
+    );
+
+    res.status(200).json({
+      message: `${numberOfPostsFound} posts and related comments deleted successfully.`,
+    });
   } catch (error) {
-    res.status(500).json({ error: error });
+    res.status(500).json({
+      error: "An error occurred while deleting posts and related comments.",
+      details: error,
+    });
   }
 };
+
+module.exports = deleteAllPost;
 
 // Apply middleware to set updateDate before sav
 module.exports = {
