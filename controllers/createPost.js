@@ -54,19 +54,19 @@ const createPost = async (req, res) => {
 };
 
 const getAllPost = async (req, res) => {
-  const { username } = req.body;
-  if (!username) {
-    console.error("Username is required");
-    return res.status(400).json({ error: "Username is required" });
-  }
+  // const { username } = req.body;
+  // if (!username) {
+  //   console.error("Username is required");
+  //   return res.status(400).json({ error: "Username is required" });
+  // }
   try {
-    const userPosts = await blogDetailSchema.Post.find({ username });
+    const userPosts = await blogDetailSchema.Post.find({});
     if (!userPosts || userPosts.length === 0) {
-      return res
-        .status(404)
-        .json({ error: `No posts found for the user ${username}` });
+      return res.status(404).json({ error: `No posts found` });
     }
+
     res.json(userPosts);
+    res.render("home", { data: userPosts });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
   }

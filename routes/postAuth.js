@@ -7,8 +7,8 @@ const verifyRoles = require("../middleware/verifyRoles");
 
 router.post(
   "/",
-  verifyJWT,
-  verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor),
+  // verifyJWT,
+  // verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor),
   registerController.createPost
 );
 router.get(

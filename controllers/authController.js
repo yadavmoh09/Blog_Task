@@ -5,6 +5,7 @@ require("dotenv").config();
 const fsPromises = require("fs").promises;
 const path = require("path");
 const BlogDetails = require("../model/BlogDetails");
+const axios = require("axios");
 
 exports.register = async (req, res) => {
   const UserDetail = req.body;
@@ -91,12 +92,14 @@ exports.login = async (req, res) => {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
     });
-    res.render("home", {
-      accessToken: accessToken,
-    });
+    const response = await axios.get("http://localhost:3500/post/getAllPost");
+    const data = response.data;
+    console.log(data);
+    res.render("home", { message: "Hello mohit", items: data });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    if (!res.headersSent)
+      res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
