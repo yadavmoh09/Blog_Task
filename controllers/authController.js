@@ -45,14 +45,17 @@ exports.login = async (req, res) => {
 
   try {
     const user = await User.findOne({ username });
+
     if (!user) {
       return res.status(401).json({ error: "Invalid username or password" });
     }
     const validPassword = await bcrypt.compare(password, user.password);
+
     if (!validPassword) {
       return res.status(401).json({ error: "Invalid username or password" });
     }
     const roles = Object.values(user.roles);
+
     const accessToken = jwt.sign(
       {
         userInfo: {
@@ -82,7 +85,10 @@ exports.login = async (req, res) => {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
     });
-    res.status(200).json({ accessToken });
+    res.render("home", {
+      accessToken: accessToken,
+    });
+    // res.status(200).json({ accessToken });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal Server Error" });

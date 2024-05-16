@@ -24,6 +24,9 @@ app.use(express.json());
 //middleware for cookies
 app.use(cookieParser());
 
+app.set("view engine", "ejs");
+app.set("views", path.resolve("./views"));
+
 //serve static files
 app.use("/", express.static(path.join(__dirname, "/public")));
 
