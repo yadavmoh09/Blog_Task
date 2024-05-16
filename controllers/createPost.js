@@ -73,12 +73,13 @@ const getAllPost = async (req, res) => {
 };
 
 const getPostByID = async (req, res) => {
-  const { post_id } = req.body;
+  const post_id = req.query.post_id;
   if (!post_id) return res.status(400).json({ error: "post Id required" });
   const foundPost = await blogDetailSchema.Post.find({ post_id });
   if (!foundPost || foundPost.length === 0)
     return res.status(400).json({ error: `post not found for ${post_id}` });
-  res.json(foundPost);
+  console.log(foundPost);
+  res.render("singlePost", { item: foundPost });
 };
 
 const updatePost = async (req, res) => {

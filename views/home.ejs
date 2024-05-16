@@ -66,6 +66,7 @@
               </div>
               <%})%>
             </div>
+            <% if(item.content.media_location.length >1){%>
             <button
               class="carousel-control-prev"
               type="button"
@@ -90,6 +91,7 @@
               ></span>
               <span class="visually-hidden">Next</span>
             </button>
+            <% } %>
           </div>
 
           <!-- image slider end -->
@@ -108,8 +110,8 @@
             <div class="card-footer">
               <% let updateDate = new Date(item.updateDate); let update_diffTime
               = Math.abs(currentDate - updateDate); let update_diffHours =
-              Math.ceil(diffTime / (1000 * 60 * 60)); let update_diffDays =
-              Math.ceil(diffTime / (1000 * 60 * 60 * 24)); %>
+              Math.ceil(update_diffTime / (1000 * 60 * 60)); let update_diffDays
+              = Math.ceil(update_diffTime / (1000 * 60 * 60 * 24)); %>
               <p class="card-text">
                 <% if (diffHours < 24) { %>
                 <small class="text-muted"
@@ -120,6 +122,16 @@
                   >Updated post <%= update_diffDays %> days ago <% } %></small
                 >
               </p>
+              <form action="/post/getPost" method="GET">
+                <input
+                  type="text"
+                  id="myInput"
+                  name="post_id"
+                  value="<%=item.post_id %>"
+                  style="visibility: hidden"
+                />
+                <button type="submit" class="btn btn-info">View Post</button>
+              </form>
             </div>
           </div>
         </div>

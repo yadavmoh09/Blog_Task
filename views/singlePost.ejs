@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+      body {
+        margin: 10px;
+        padding: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+          <img
+            src="https://www.w3schools.com/howto/img_avatar2.png"
+            alt="Logo"
+            style="width: 40px"
+            class="rounded-pill"
+          />
+        </a>
+      </div>
+    </nav>
+    <% if (item.length>0) {%> <% item.forEach(info => {%>
+    <div class="card mb-3">
+      <div class="card-header">
+        <% let postDate = new Date(info.createDate); let currentDate = new
+        Date(); let diffTime = Math.abs(currentDate - postDate); let diffHours =
+        Math.ceil(diffTime / (1000 * 60 * 60)); let diffDays =
+        Math.ceil(diffTime / (1000 * 60 * 60 * 24)); %>
+        <p class="card-text">
+          <strong class="text-muted"><%=info.location %> </strong>
+        </p>
+        <p class="card-text">
+          <% if (diffHours < 24) { %>
+          <small class="text-muted"
+            >Created by <strong><%=info.username %></strong> <%= diffHours %>
+            hours ago
+          </small>
+          <% }else { %>
+          <small class="text-muted"
+            >Created by <strong><%=info.username %></strong> <%= diffDays %>
+            days ago <% } %></small
+          >
+        </p>
+      </div>
+
+      <!-- image slider start -->
+      <div
+        id="carouselExampleControls"
+        class="carousel slide"
+        data-bs-ride="carousel"
+      >
+        <div class="carousel-inner">
+          <%info.content.media_location.forEach(element=>{%>
+          <div class="carousel-item active">
+            <img
+              src="<%=element %>"
+              class="d-block w-100"
+              alt="..."
+              style="width: 100%; height: 200px; object-fit: cover"
+            />
+          </div>
+          <%})%>
+        </div>
+        <% if(info.content.media_location.length >1){%>
+        <button
+          class="carousel-control-prev"
+          type="button"
+          data-bs-target="#carouselExampleControls"
+          data-bs-slide="prev"
+        >
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button
+          class="carousel-control-next"
+          type="button"
+          data-bs-target="#carouselExampleControls"
+          data-bs-slide="next"
+        >
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+        <% } %>
+      </div>
+
+      <!-- image slider end -->
+
+      <div class="card-body">
+        <h5 class="card-title"><%=info.title %></h5>
+        <p class="card-text"><%=info.content.text%></p>
+        <p class="card-text">
+          <% info.tags.forEach((tag)=>{ %> #<%= tag %> <%})%>
+        </p>
+        <div class="card-footer">
+          <% let updateDate = new Date(info.updateDate); let update_diffTime =
+          Math.abs(currentDate - updateDate); let update_diffHours =
+          Math.ceil(update_diffTime / (1000 * 60 * 60)); let update_diffDays =
+          Math.ceil(update_diffTime / (1000 * 60 * 60 * 24)); %>
+          <p class="card-text">
+            <% if (diffHours < 24) { %>
+            <small class="text-muted"
+              >Updated post <%= update_diffHours %> hours ago
+            </small>
+            <% }else { %>
+            <small class="text-muted"
+              >Updated post <%= update_diffDays %> days ago <% } %></small
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <%}); %> <%} else {%>
+    <h2>Data not found</h2>
+    <% } %>
+  </body>
+</html>

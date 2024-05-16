@@ -94,7 +94,6 @@ exports.login = async (req, res) => {
     });
     const response = await axios.get("http://localhost:3500/post/getAllPost");
     const data = response.data;
-    console.log(data);
     res.render("home", { message: "Hello mohit", items: data });
   } catch (error) {
     console.log(error);
