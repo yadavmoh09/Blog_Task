@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      href="https://cdn.jsdelivr.net/npm/@yaireo/tagify@4.9.7/dist/tagify.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+
+      fieldset {
+        border: none;
+        padding: 0;
+      }
+
+      legend {
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      div {
+        margin-bottom: 10px;
+      }
+
+      label {
+        margin-left: 5px;
+      }
+
+      /* Full-width input fields */
+      input[type="text"],
+      input[type="password"] {
+        width: 100%;
+        padding: 15px;
+        margin: 5px 0 22px 0;
+        display: inline-block;
+        border: none;
+        background: #f1f1f1;
+      }
+
+      input[type="text"]:focus,
+      input[type="password"]:focus {
+        background-color: #ddd;
+        outline: none;
+      }
+
+      hr {
+        border: 1px solid #f1f1f1;
+        margin-bottom: 25px;
+      }
+
+      /* Set a style for all buttons */
+      button {
+        background-color: #04aa6d;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        opacity: 0.9;
+      }
+
+      button:hover {
+        opacity: 1;
+      }
+
+      /* Extra styles for the cancel button */
+      .loginbtn {
+        padding: 14px 20px;
+        background-color: #f44336;
+      }
+
+      /* Float cancel and signup buttons and add an equal width */
+      .loginbtn,
+      .signupbtn {
+        float: left;
+        width: 50%;
+      }
+
+      /* Add padding to container elements */
+      .container {
+        padding: 16px;
+      }
+
+      /* Clear floats */
+      .clearfix::after {
+        content: "";
+        clear: both;
+        display: table;
+      }
+
+      /* Change styles for cancel button and signup button on extra small screens */
+      @media screen and (max-width: 300px) {
+        .cancelbtn,
+        .signupbtn {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <% if (locals.message) {%>
+    <script>
+      alert("<%= locals.message %>");
+    </script>
+    <% } %>
+    <form
+      action="http://localhost:3500/auth/register"
+      method="POST"
+      style="border: 1px solid #ccc"
+    >
+      <div class="container">
+        <h1>Sign Up</h1>
+        <p>Please fill in this form to create an account.</p>
+        <hr />
+
+        <label for="username"><b>User Name</b></label>
+        <input
+          type="text"
+          placeholder="Enter Username"
+          name="username"
+          required
+        />
+        <label for="email"><b>Email</b></label>
+        <input
+          type="text"
+          placeholder="enter@gmail.com"
+          name="email"
+          required
+        />
+        <label for="phone_number"><b>Contact Number</b></label>
+        <input
+          type="text"
+          placeholder="Enter Contact Number"
+          name="phone_number"
+          required
+        />
+
+        <fieldset>
+          <legend>Select your role:</legend>
+          <div>
+            <input type="checkbox" id="admin" name="role" value="5150" />
+            <label for="admin">Admin</label>
+          </div>
+          <div>
+            <input type="checkbox" id="editor" name="role" value="1984" />
+            <label for="editor">Editor</label>
+          </div>
+          <div>
+            <input type="checkbox" id="user" name="role" value="2001" />
+            <label for="user">User</label>
+          </div>
+        </fieldset>
+
+        <label for="security_question"><b>Security Question</b></label>
+        <input
+          type="text"
+          placeholder="Enter Security Question"
+          name="security_question"
+          required
+        />
+        <label for="security_answer"><b>Security Answer</b></label>
+        <input
+          type="text"
+          placeholder="Enter Security Answer"
+          name="security_answer"
+          required
+        />
+        <fieldset>
+          <legend>Select Your Interests:</legend>
+          <div>
+            <input
+              type="checkbox"
+              id="interest1"
+              name="interested_in"
+              value="Technology"
+            />
+            <label for="interest1">Technology</label>
+          </div>
+          <div>
+            <input
+              type="checkbox"
+              id="interest2"
+              name="interested_in"
+              value="Music"
+            />
+            <label for="interest2">Music</label>
+          </div>
+          <div>
+            <input
+              type="checkbox"
+              id="interest3"
+              name="interested_in"
+              value="Sports"
+            />
+            <label for="interest3">Sports</label>
+          </div>
+          <div>
+            <input
+              type="checkbox"
+              id="interest4"
+              name="interested_in"
+              value="Art"
+            />
+            <label for="interest4">Art</label>
+          </div>
+          <div>
+            <input
+              type="checkbox"
+              id="interest5"
+              name="interested_in"
+              value="Travel"
+            />
+            <label for="interest5">Travel</label>
+          </div>
+          <div>
+            <input
+              type="checkbox"
+              id="interest6"
+              name="interested_in"
+              value="Cooking"
+            />
+            <label for="interest6">Cooking</label>
+          </div>
+        </fieldset>
+
+        <label for="user_location"><b>Enter Your Location</b></label>
+        <input
+          type="text"
+          placeholder="Enter Password"
+          name="user_location"
+          required
+        />
+
+        <label for="psw"><b>Password</b></label>
+        <input
+          type="password"
+          placeholder="Enter Password"
+          name="password"
+          required
+        />
+
+        <label for="password_repeat"><b>Repeat Password</b></label>
+        <input
+          type="password"
+          placeholder="Repeat Password"
+          name="password_repeat"
+          required
+        />
+        <p>
+          By creating an account you agree to our
+          <a href="#" style="color: dodgerblue">Terms & Privacy</a>.
+        </p>
+
+        <div class="clearfix">
+          <button type="button" class="loginbtn" id="loginbtn">Login</button>
+          <button type="submit" class="signupbtn">Sign Up</button>
+        </div>
+      </div>
+    </form>
+    <script>
+      document.getElementById("loginbtn").addEventListener("click", () => {
+        console.log("btn click");
+        window.location.href = "/";
+      });
+    </script>
+  </body>
+</html>

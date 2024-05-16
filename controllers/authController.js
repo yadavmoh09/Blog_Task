@@ -9,17 +9,21 @@ const BlogDetails = require("../model/BlogDetails");
 exports.register = async (req, res) => {
   const UserDetail = req.body;
   try {
+    if (UserDetail.password !== UserDetail.password_repeat)
+      return res.render("signUpPage", {
+        message: "Password Mismatch",
+      });
     if (!UserDetail.username || !UserDetail.password)
-      return res
-        .status(400)
-        .json({ message: "Username and password are required." });
-
+      return res.render("signUpPage", {
+        message: "Username and password are required.",
+      });
     const duplicate = await User.findOne({
       username: UserDetail.username,
     }).exec();
     if (duplicate)
-      return res.status(409).json({ message: "username already defined" });
-
+      return res.render("signUpPage", {
+        message: "username already Exist",
+      });
     const hashedPassword = await bcrypt.hash(UserDetail.password, 10);
 
     const user = new User({
@@ -34,9 +38,11 @@ exports.register = async (req, res) => {
       password: hashedPassword,
     });
     await user.save();
-    res.status(201).json({ message: "User registered successfully" });
+    res.redirect("/");
   } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
+    res.render("signUpPage", {
+      message: "Internal server error",
+    });
   }
 };
 
@@ -88,7 +94,6 @@ exports.login = async (req, res) => {
     res.render("home", {
       accessToken: accessToken,
     });
-    // res.status(200).json({ accessToken });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal Server Error" });

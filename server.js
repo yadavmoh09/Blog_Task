@@ -37,6 +37,9 @@ app.use("/post", require("./routes/postAuth"));
 app.use("/refresh", refreshRoutes);
 app.use("/logout", logOutRoutes);
 app.use("/comment", require("./routes/commentAuth"));
+app.use("/signup", (req, res) => {
+  res.render("signUpPage");
+});
 
 app.all("*", (req, res) => {
   res.status(404);

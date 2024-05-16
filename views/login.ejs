@@ -101,7 +101,15 @@
         />
 
         <button type="submit">Login</button>
+        <div>
+          <span><a href="#" id="signup">SignUp</a></span>
+        </div>
       </div>
     </form>
+    <script>
+      document.getElementById("signup").addEventListener("click", () => {
+        window.location.href = "signup";
+      });
+    </script>
   </body>
 </html>
