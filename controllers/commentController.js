@@ -1,16 +1,14 @@
 const mongoose = require("mongoose");
 const express = require("express");
 const User = require("../model/User");
-const { v4: uuidv4 } = require("uuid");
 const router = express.Router();
-// Load the schema definition
-const blogDetailSchema = require("../model/BlogDetails");
+
+const BlogDetails = require("../model/BlogDetails");
 
 const insertComment = async (req, res) => {
   try {
     const { comments } = req.body;
     if (comments && Array.isArray(comments)) {
-      // Iterate over each post asynchronously
       const cookies = req.cookies;
       if (!cookies?.jwt) return res.sendStatus(401);
 
@@ -19,13 +17,13 @@ const insertComment = async (req, res) => {
       await Promise.all(
         comments.map(async (comment) => {
           try {
-            const post = await blogDetailSchema.Post.findOne({
+            const post = await BlogDetails.Post.findOne({
               post_id: comment.post_id,
             });
             if (post === null) {
               throw new Error("Post is not available...");
             }
-            await blogDetailSchema.Comment.create({
+            await BlogDetails.Comment.create({
               post_id: comment.post_id,
               text: comment.text,
               username: user.username,
@@ -37,26 +35,28 @@ const insertComment = async (req, res) => {
       );
     }
 
-    res.status(201).send("comment inserted successfully");
+    res.status(201).send("Comment inserted successfully");
   } catch (error) {
-    res.status(400).send("error while inserting the");
+    console.error("Error inserting comment:", error.message);
+    res.status(400).send("Error while inserting the comment");
   }
 };
 
 const getAllComments = async (req, res) => {
   const { post_id } = req.body;
   if (!post_id) {
-    return res.status(400).json({ error: "post ID is required" });
+    return res.status(400).json({ error: "Post ID is required" });
   }
   try {
-    const foundComment = await blogDetailSchema.Comment.find({ post_id });
-    if (!foundComment || foundComment.length === 0) {
+    const foundComments = await BlogDetails.Comment.find({ post_id });
+    if (!foundComments || foundComments.length === 0) {
       return res
         .status(404)
-        .json({ error: `No Comment found on the Post ${post_id}` });
+        .json({ error: `No comments found for the post ${post_id}` });
     }
-    res.json(foundComment);
+    res.json(foundComments);
   } catch (error) {
+    console.error("Error fetching comments:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -65,24 +65,25 @@ const deleteComment = async (req, res) => {
   const { comment_id } = req.body;
 
   if (!comment_id)
-    return res.status(400).json({ error: "comment ID requried" });
+    return res.status(400).json({ error: "Comment ID required" });
 
-  const foundComment = await blogDetailSchema.Comment.findOne({ comment_id });
-  if (!foundComment || foundComment.length)
+  const foundComment = await BlogDetails.Comment.findOne({ comment_id });
+  if (!foundComment)
     return res
       .status(400)
-      .json({ error: `Comment not found for ${comment_id}` });
+      .json({ error: `Comment not found for ID ${comment_id}` });
+
   await foundComment.delete();
-  res.status(200).json({ message: "comment deleted successfully" });
+  res.status(200).json({ message: "Comment deleted successfully" });
 };
 
 const modifyComment = async (req, res) => {
   const { comment_id } = req.body;
   if (!comment_id)
-    return res.status(400).json({ error: "Comment id required" });
+    return res.status(400).json({ error: "Comment ID required" });
 
   try {
-    const foundComment = await blogDetailSchema.Comment.findOne({
+    const foundComment = await BlogDetails.Comment.findOne({
       comment_id: comment_id,
     });
     if (!foundComment)
@@ -100,36 +101,38 @@ const modifyComment = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-const deleteAllPostComment = async (req, res) => {
+
+const deleteAllPostComments = async (req, res) => {
   const { post_id } = req.body;
   try {
     if (!post_id) return res.status(400).json({ error: "Post ID required" });
-    const foundComment = await blogDetailSchema.Comment.find({ post_id });
-    if (!foundComment || foundComment.length === 0)
+    const foundComments = await BlogDetails.Comment.find({ post_id });
+    if (!foundComments || foundComments.length === 0)
       return res
         .status(400)
-        .json({ error: `comment not found for ${post_id}` });
-    const numberOfCommentFound = foundComment.length;
-    // If Comment are found, delete
-    if (foundComment.length > 0) {
+        .json({ error: `Comments not found for ${post_id}` });
+
+    const numberOfCommentsFound = foundComments.length;
+    // If Comments are found, delete
+    if (foundComments.length > 0) {
       await Promise.all(
-        foundComment.map(async (comment) => {
+        foundComments.map(async (comment) => {
           await comment.deleteOne();
         })
       );
     }
     res.status(200).json({
-      message: `${numberOfCommentFound} comments deleted successfully`,
+      message: `${numberOfCommentsFound} comments deleted successfully`,
     });
   } catch (error) {
-    res.status(500).json({ error: error });
+    console.error("Error deleting comments:", error.message);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
-// Apply middleware to set updateDate before sav
 module.exports = {
   insertComment,
-  deleteAllPostComment,
+  deleteAllPostComments,
   deleteComment,
   getAllComments,
   modifyComment,

@@ -15,7 +15,7 @@ router.delete(
   "/deletePostComments",
   verifyJWT,
   verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor),
-  commentController.deleteAllPostComment
+  commentController.deleteAllPostComments
 );
 router.delete(
   "/deleteComment",

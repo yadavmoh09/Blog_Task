@@ -13,8 +13,8 @@ router.post(
 );
 router.get(
   "/getAllPost",
-  verifyJWT,
-  verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor, ROLES_LIST.User),
+  // verifyJWT,
+  // verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor, ROLES_LIST.User),
   registerController.getAllPost
 );
 router.get(
