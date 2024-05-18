@@ -92,9 +92,11 @@ exports.login = async (req, res) => {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
     });
-    const response = await axios.get("http://localhost:3500/post/getAllPost");
+    const response = await axios.get(
+      "http://localhost:3500/post/getAllPost/login"
+    );
     const data = response.data;
-    res.render("home", { message: "Hello mohit", items: data });
+    res.render("home", { pageType: "home", items: data, datafound: true });
   } catch (error) {
     console.log(error);
     if (!res.headersSent)

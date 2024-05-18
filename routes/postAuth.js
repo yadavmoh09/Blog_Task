@@ -12,7 +12,7 @@ router.post(
   registerController.createPost
 );
 router.get(
-  "/getAllPost",
+  "/getAllPost/:Operation",
   // verifyJWT,
   // verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor, ROLES_LIST.User),
   registerController.getAllPost
@@ -23,6 +23,9 @@ router.get(
   // verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor, ROLES_LIST.User),
   registerController.getPostByID
 );
+router.get("/userPost/:operation?", registerController.getPostByUserName);
+
+router.post("/deleteUserPost", registerController.deletePostByID);
 router.put(
   "/updatePost",
   verifyJWT,

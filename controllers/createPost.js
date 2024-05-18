@@ -2,11 +2,13 @@ const mongoose = require("mongoose");
 const express = require("express");
 const User = require("../model/User");
 const { v4: uuidv4 } = require("uuid");
-const router = express.Router();
+const http = require("http");
+const axios = require("axios");
+// const router = express.Router();
 
 // Load the schema definition
 const blogDetailSchema = require("../model/BlogDetails");
-const { post } = require("../routes/postAuth");
+// const { post } = require("../routes/postAuth");
 
 // Route to create users, posts, and categories
 const createPost = async (req, res) => {
@@ -59,14 +61,19 @@ const getAllPost = async (req, res) => {
   //   console.error("Username is required");
   //   return res.status(400).json({ error: "Username is required" });
   // }
+  const Operation = req.params.Operation;
   try {
     const userPosts = await blogDetailSchema.Post.find({});
     if (!userPosts || userPosts.length === 0) {
       return res.status(404).json({ error: `No posts found` });
     }
-
+    if (Operation === "home")
+      return res.render("home", {
+        pageType: "home",
+        items: userPosts,
+        datafound: true,
+      });
     res.json(userPosts);
-    res.render("home", { data: userPosts });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
   }
@@ -78,10 +85,112 @@ const getPostByID = async (req, res) => {
   const foundPost = await blogDetailSchema.Post.find({ post_id });
   if (!foundPost || foundPost.length === 0)
     return res.status(400).json({ error: `post not found for ${post_id}` });
-  console.log(foundPost);
   res.render("singlePost", { item: foundPost });
 };
+const getPostByUserName = async (req, res) => {
+  const operation = req.params.operation;
 
+  console.log("getPostByUserName");
+  console.log(operation);
+  // const cookies = req.cookies;
+  // if (!cookies?.jwt) return res.sendStatus(401);
+  // const refreshToken = cookies.jwt;
+
+  // const userLogin = await User.findOne({ refreshToken });
+  // console.log(userLogin.username);
+
+  const usrPost = await blogDetailSchema.Post.find({
+    // username: userLogin.username,
+    username: "yadavmoh91",
+  });
+  if (!usrPost || usrPost.length === 0)
+    return res.render("home", {
+      pageType: "personal",
+      items: usrPost,
+      datafound: false,
+    });
+  if (operation === "getData") {
+    return res.json(usrPost);
+  }
+  res.render("home", { pageType: "personal", items: usrPost, datafound: true });
+};
+const deletePostByID = async (req, res) => {
+  try {
+    console.log("deletePostByID called");
+
+    const post_id = req.body.post_id;
+    console.log("post_id:", post_id);
+
+    const usrPost = await blogDetailSchema.Post.findOneAndDelete({
+      post_id: post_id,
+    });
+    console.log("Deleted Post:", usrPost);
+
+    if (!usrPost) {
+      console.log("Post not found");
+      return res.status(404).send("Post not found");
+    }
+
+    const getData = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:3500/post/userPost/getData"
+        );
+        return response.data;
+      } catch (error) {
+        console.error("Error fetching data:", error.message);
+        throw new Error(`Failed to fetch data: ${error.message}`);
+      }
+    };
+
+    const userData = await getData();
+
+    console.log("User Data:", userData);
+
+    res.render("home", {
+      pageType: "personal",
+      items: userData,
+      datafound: userData && userData.length > 0,
+    });
+  } catch (error) {
+    console.error("Error in deletePostByID:", error);
+    res.status(500).send("An error occurred");
+  }
+};
+
+// const deletePostByID = async (req, res) => {
+//   try {
+//     console.log("deletePostByID called");
+
+//     const post_id = req.body.post_id;
+//     console.log("post_id:", post_id);
+
+//     const usrPost = await blogDetailSchema.Post.findOneAndDelete({
+//       post_id: post_id,
+//     });
+//     console.log("Deleted Post:", usrPost);
+
+//     if (!usrPost) {
+//       console.log("Post not found");
+//       return res.status(404).send("Post not found");
+//     }
+
+//     const response = await nodeFetch(
+//       "http://localhost:3500/post/getPostByUserName/getData"
+//     );
+//     const userData = await response.json();
+//     console.log("User Data:", userData);
+
+//     res.render("home", {
+//       pageType: "personal",
+//       items: userData,
+//       datafound: userData && userData.length > 0,
+//     });
+//   } catch (error) {
+//     console.error("Error in deletePostByID:", error);
+//     res.status(500).send("An error occurred");
+//   }
+// };
 const updatePost = async (req, res) => {
   const { post_id } = req.body;
   if (!post_id) return res.status(400).json({ error: "post_id required" });
@@ -188,8 +297,6 @@ const deleteAllPost = async (req, res) => {
   }
 };
 
-module.exports = deleteAllPost;
-
 // Apply middleware to set updateDate before sav
 module.exports = {
   createPost,
@@ -197,4 +304,6 @@ module.exports = {
   getPostByID,
   updatePost,
   deleteAllPost,
+  getPostByUserName,
+  deletePostByID,
 };

@@ -24,31 +24,56 @@
             class="rounded-pill"
           />
         </a>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="/post/getAllPost/home"
+                >Home <span class="sr-only"></span
+              ></a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="/post/userPost/getResponse"
+                >Personal Post <span class="sr-only"></span
+              ></a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="/post/userPost/getResponse"
+                >Create Post <span class="sr-only"></span
+              ></a>
+            </li>
+          </ul>
+        </div>
       </div>
     </nav>
 
     <div class="row row-cols-1 row-cols-md-3 g-4">
-      <%items.forEach(item => {%>
+      <% if(datafound) {%> <%items.forEach(item => {%>
       <div class="col">
         <div class="card h-100">
           <div class="card-header">
             <% let postDate = new Date(item.createDate); let currentDate = new
             Date(); let diffTime = Math.abs(currentDate - postDate); let
             diffHours = Math.ceil(diffTime / (1000 * 60 * 60)); let diffDays =
-            Math.ceil(diffTime / (1000 * 60 * 60 * 24)); %>
+            Math.ceil(diffTime / (1000 * 60 * 60 * 24));let minutes =
+            Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60)); %>
             <p class="card-text">
               <strong class="text-muted"><%=item.location %> </strong>
             </p>
             <p class="card-text">
-              <% if (diffHours < 24) { %>
+              <% if(diffDays>1){ %>
+              <small class="text-muted"
+                >Created by <strong><%=item.username %></strong> <%= diffDays %>
+                days ago
+              </small>
+              <%}else if (diffHours > 1) { %>
               <small class="text-muted"
                 >Created by <strong><%=item.username %></strong> <%= diffHours
                 %> hours ago
               </small>
               <% }else { %>
               <small class="text-muted"
-                >Created by <strong><%=item.username %></strong> <%= diffDays %>
-                days ago <% } %></small
+                >Created by <strong><%=item.username %></strong> <%= minutes%>
+                minutes ago <% } %></small
               >
             </p>
           </div>
@@ -111,33 +136,67 @@
               <% let updateDate = new Date(item.updateDate); let update_diffTime
               = Math.abs(currentDate - updateDate); let update_diffHours =
               Math.ceil(update_diffTime / (1000 * 60 * 60)); let update_diffDays
-              = Math.ceil(update_diffTime / (1000 * 60 * 60 * 24)); %>
+              = Math.ceil(update_diffTime / (1000 * 60 * 60 * 24));let
+              updated_minutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000
+              * 60)); %>
               <p class="card-text">
-                <% if (diffHours < 24) { %>
+                <% if(update_diffDays> 1){ %>
+                <small class="text-muted"
+                  >Updated post <%= update_diffDays %> days ago
+                </small>
+                <% }else if (diffHours >1) { %>
                 <small class="text-muted"
                   >Updated post <%= update_diffHours %> hours ago
                 </small>
                 <% }else { %>
                 <small class="text-muted"
-                  >Updated post <%= update_diffDays %> days ago <% } %></small
+                  >Updated post <%= updated_minutes %> minutes ago <% }
+                  %></small
                 >
               </p>
-              <form action="/post/getPost" method="GET">
-                <input
-                  type="text"
-                  id="myInput"
-                  name="post_id"
-                  value="<%=item.post_id %>"
-                  style="visibility: hidden"
-                />
-                <button type="submit" class="btn btn-info">View Post</button>
-              </form>
+              <div class="container mt-5">
+                <form action="/post/getPost" method="GET">
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      id="myInput"
+                      name="post_id"
+                      class="form-control"
+                      value="<%=item.post_id %>"
+                      style="visibility: hidden"
+                    />
+                    <button type="submit" class="btn btn-info form-control">
+                      View Post
+                    </button>
+                  </div>
+                </form>
+              </div>
+              <% if(pageType === "personal") {%>
+              <div class="container mt-5">
+                <form action="/post/deleteUserPost" method="POST">
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      id="myInput"
+                      name="post_id"
+                      class="form-control"
+                      value="<%=item.post_id %>"
+                      style="visibility: hidden"
+                    />
+                    <button type="submit" class="btn btn-danger form-control">
+                      Delete Post
+                    </button>
+                  </div>
+                </form>
+              </div>
+              <% } %>
             </div>
           </div>
         </div>
       </div>
-
-      <% });%>
+      <% });%> <% }else{ %>
+      <h2>Data not found</h2>
+      <% } %>
     </div>
   </body>
 </html>
