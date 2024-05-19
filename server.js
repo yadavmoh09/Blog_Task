@@ -9,6 +9,7 @@ const connectDB = require("./config/dbConn");
 const authRoutes = require("./routes/auth"); // Import authRoutes
 const refreshRoutes = require("./routes/refresh");
 const logOutRoutes = require("./routes/logout");
+const methodOverride = require("method-override");
 
 const PORT = process.env.PORT || 3500;
 
@@ -23,6 +24,7 @@ app.use(express.json());
 
 //middleware for cookies
 app.use(cookieParser());
+app.use(methodOverride("_method"));
 
 app.set("view engine", "ejs");
 app.set("views", path.resolve("./views"));
@@ -37,6 +39,9 @@ app.use("/post", require("./routes/postAuth"));
 app.use("/refresh", refreshRoutes);
 app.use("/logout", logOutRoutes);
 app.use("/comment", require("./routes/commentAuth"));
+app.use("/createNewPost", (req, res) => {
+  res.render("createPost");
+});
 app.use("/signup", (req, res) => {
   res.render("signUpPage");
 });

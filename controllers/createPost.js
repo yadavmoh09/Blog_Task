@@ -4,6 +4,7 @@ const User = require("../model/User");
 const { v4: uuidv4 } = require("uuid");
 const http = require("http");
 const axios = require("axios");
+
 // const router = express.Router();
 
 // Load the schema definition
@@ -13,41 +14,26 @@ const blogDetailSchema = require("../model/BlogDetails");
 // Route to create users, posts, and categories
 const createPost = async (req, res) => {
   try {
-    const { posts } = req.body;
-    // Create posts
-    if (posts && Array.isArray(posts)) {
-      // Iterate over each post asynchronously
+    const body = req.body;
+    const files = [];
+    if (body) {
       const cookies = req.cookies;
       if (!cookies?.jwt) return res.sendStatus(401);
       const refreshToken = cookies.jwt;
       const userLogin = await User.findOne({ refreshToken });
-      await Promise.all(
-        posts.map(async (post) => {
-          // Create each post
-          try {
-            // Use findOne to find a user by username
-            const user = await User.findOne({
-              username: userLogin.username,
-            });
-            if (user === null) {
-              throw new Error("User is not available...");
-            }
-            await blogDetailSchema.Post.create({
-              username: userLogin.username,
-              title: post.title,
-              content: post.content,
-              post_id: uuidv4(),
-              location: post.location,
-              tags: post.tags,
-            });
-          } catch (error) {
-            console.error("Error finding user by username:", error);
-            throw error; // Throw the error for handling elsewhere
-          }
-        })
-      );
-    }
+      const currentUser = userLogin.username;
+      const separetedTags = body.tags.split("#").map((tag) => tag.trim());
+      const mediaLocations = files.map((file) => file);
 
+      await blogDetailSchema.Post.create({
+        username: currentUser,
+        title: body.title,
+        content: { media_location: mediaLocations, text: body.text },
+        post_id: uuidv4(),
+        location: body.location,
+        tags: separetedTags,
+      });
+    }
     res.status(201).send("Documents created successfully");
   } catch (error) {
     console.error("Error creating documents:", error);
@@ -90,8 +76,6 @@ const getPostByID = async (req, res) => {
 const getPostByUserName = async (req, res) => {
   const operation = req.params.operation;
 
-  console.log("getPostByUserName");
-  console.log(operation);
   // const cookies = req.cookies;
   // if (!cookies?.jwt) return res.sendStatus(401);
   // const refreshToken = cookies.jwt;

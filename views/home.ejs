@@ -37,7 +37,7 @@
               ></a>
             </li>
             <li class="nav-item active">
-              <a class="nav-link" href="/post/userPost/getResponse"
+              <a class="nav-link" href="/createNewPost"
                 >Create Post <span class="sr-only"></span
               ></a>
             </li>
@@ -47,55 +47,59 @@
     </nav>
 
     <div class="row row-cols-1 row-cols-md-3 g-4">
-      <% if(datafound) {%> <%items.forEach(item => {%>
+      <% if(datafound) {%> <%items.forEach((item, index) => {%>
       <div class="col">
         <div class="card h-100">
           <div class="card-header">
             <% let postDate = new Date(item.createDate); let currentDate = new
             Date(); let diffTime = Math.abs(currentDate - postDate); let
             diffHours = Math.ceil(diffTime / (1000 * 60 * 60)); let diffDays =
-            Math.ceil(diffTime / (1000 * 60 * 60 * 24));let minutes =
+            Math.ceil(diffTime / (1000 * 60 * 60 * 24)); let minutes =
             Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60)); %>
             <p class="card-text">
               <strong class="text-muted"><%=item.location %> </strong>
             </p>
             <p class="card-text">
-              <% if(diffDays>1){ %>
+              <% if(diffDays > 1) { %>
               <small class="text-muted"
                 >Created by <strong><%=item.username %></strong> <%= diffDays %>
                 days ago
               </small>
-              <%}else if (diffHours > 1) { %>
+              <% } else if (diffHours > 1) { %>
               <small class="text-muted"
                 >Created by <strong><%=item.username %></strong> <%= diffHours
                 %> hours ago
               </small>
-              <% }else { %>
+              <% } else { %>
               <small class="text-muted"
-                >Created by <strong><%=item.username %></strong> <%= minutes%>
-                minutes ago <% } %></small
-              >
+                >Created by <strong><%=item.username %></strong> <%= minutes %>
+                minutes ago
+              </small>
+              <% } %>
             </p>
           </div>
 
           <!-- image slider start -->
           <div
-            id="carouselExampleControls"
+            id="carouselExampleControls<%= index %>"
             class="carousel slide"
             data-bs-ride="carousel"
           >
             <div class="carousel-inner">
-              <%item.content.media_location.forEach(element=>{%>
-              <div class="carousel-item active">
+              <% item.content.media_location.forEach((element, mediaIndex) => {
+              %>
+              <div
+                class="carousel-item <%= mediaIndex === 0 ? 'active' : '' %>"
+              >
                 <img src="<%=element %>" class="d-block w-100" alt="..." />
               </div>
-              <%})%>
+              <% }) %>
             </div>
-            <% if(item.content.media_location.length >1){%>
+            <% if(item.content.media_location.length > 1) { %>
             <button
               class="carousel-control-prev"
               type="button"
-              data-bs-target="#carouselExampleControls"
+              data-bs-target="#carouselExampleControls<%= index %>"
               data-bs-slide="prev"
             >
               <span
@@ -107,7 +111,7 @@
             <button
               class="carousel-control-next"
               type="button"
-              data-bs-target="#carouselExampleControls"
+              data-bs-target="#carouselExampleControls<%= index %>"
               data-bs-slide="next"
             >
               <span
@@ -118,41 +122,59 @@
             </button>
             <% } %>
           </div>
-
           <!-- image slider end -->
-          <!-- 
-          <img
-            src=".."
-            class="card-img-top"
-            alt="..."
-          /> -->
+
           <div class="card-body">
             <h5 class="card-title"><%=item.title %></h5>
-            <p class="card-text"><%=item.content.text %></p>
+            <div id="artical-text-<%= index %>"></div>
+            <script>
+              document.addEventListener("DOMContentLoaded", function () {
+                // The rich text content passed from the server
+                let richTextContent = `<%= item.content.text %>`; // Ensure `item.content` contains the rich text content
+                const maxChar = 1000;
+                if (richTextContent.length > maxChar) {
+                  richTextContent =
+                    richTextContent.substring(0, maxChar) + "...";
+                  console.log("inside if " + richTextContent);
+                }
+
+                // Create a temporary element to parse the HTML content
+                const tempElement = document.createElement("div");
+                tempElement.innerHTML = richTextContent;
+
+                // Extract text content
+                const textContent =
+                  tempElement.textContent || tempElement.innerText;
+
+                // Display the text content
+                document.getElementById("artical-text-<%= index %>").innerHTML =
+                  "<p>" + textContent + "</p>";
+              });
+            </script>
             <p class="card-text">
-              <% item.tags.forEach((tag)=>{ %> #<%= tag %> <%})%>
+              <% item.tags.forEach((tag) => { %> #<%= tag %> <% }) %>
             </p>
             <div class="card-footer">
               <% let updateDate = new Date(item.updateDate); let update_diffTime
               = Math.abs(currentDate - updateDate); let update_diffHours =
               Math.ceil(update_diffTime / (1000 * 60 * 60)); let update_diffDays
-              = Math.ceil(update_diffTime / (1000 * 60 * 60 * 24));let
-              updated_minutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000
-              * 60)); %>
+              = Math.ceil(update_diffTime / (1000 * 60 * 60 * 24)); let
+              updated_minutes = Math.floor((update_diffTime % (1000 * 60 * 60))
+              / (1000 * 60)); %>
               <p class="card-text">
-                <% if(update_diffDays> 1){ %>
+                <% if(update_diffDays > 1) { %>
                 <small class="text-muted"
                   >Updated post <%= update_diffDays %> days ago
                 </small>
-                <% }else if (diffHours >1) { %>
+                <% } else if (update_diffHours > 1) { %>
                 <small class="text-muted"
                   >Updated post <%= update_diffHours %> hours ago
                 </small>
-                <% }else { %>
+                <% } else { %>
                 <small class="text-muted"
-                  >Updated post <%= updated_minutes %> minutes ago <% }
-                  %></small
-                >
+                  >Updated post <%= updated_minutes %> minutes ago
+                </small>
+                <% } %>
               </p>
               <div class="container mt-5">
                 <form action="/post/getPost" method="GET">
@@ -171,7 +193,7 @@
                   </div>
                 </form>
               </div>
-              <% if(pageType === "personal") {%>
+              <% if(pageType === "personal") { %>
               <div class="container mt-5">
                 <form action="/post/deleteUserPost" method="POST">
                   <div class="input-group">
@@ -194,7 +216,7 @@
           </div>
         </div>
       </div>
-      <% });%> <% }else{ %>
+      <% }) %> <% } else { %>
       <h2>Data not found</h2>
       <% } %>
     </div>
