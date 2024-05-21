@@ -1,105 +1,86 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <!-- Bootstrap CSS -->
     <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <style>
-      body {
-        margin: 10px;
-        padding: 5px;
-      }
-    </style>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/css/styles.css" />
   </head>
   <body>
-    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#">
-          <img
-            src="https://www.w3schools.com/howto/img_avatar2.png"
-            alt="Logo"
-            style="width: 40px"
-            class="rounded-pill"
-          />
-        </a>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-              <a class="nav-link" href="/post/getAllPost/home"
-                >Home <span class="sr-only"></span
-              ></a>
-            </li>
-            <li class="nav-item active">
-              <a class="nav-link" href="/post/userPost/getResponse"
-                >Personal Post <span class="sr-only"></span
-              ></a>
-            </li>
-            <li class="nav-item active">
-              <a class="nav-link" href="/createNewPost"
-                >Create Post <span class="sr-only"></span
-              ></a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+    <%- include('partials/navbar') %>
 
-    <div class="row row-cols-1 row-cols-md-3 g-4">
+    <div class="row row-cols-1 row-cols-md-3 g-4 mt-5">
       <% if(datafound) {%> <%items.forEach((item, index) => {%>
       <div class="col">
         <div class="card h-100">
-          <div class="card-header">
-            <% let postDate = new Date(item.createDate); let currentDate = new
-            Date(); let diffTime = Math.abs(currentDate - postDate); let
-            diffHours = Math.ceil(diffTime / (1000 * 60 * 60)); let diffDays =
-            Math.ceil(diffTime / (1000 * 60 * 60 * 24)); let minutes =
-            Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60)); %>
-            <p class="card-text">
-              <strong class="text-muted"><%=item.location %> </strong>
-            </p>
-            <p class="card-text">
-              <% if(diffDays > 1) { %>
-              <small class="text-muted"
-                >Created by <strong><%=item.username %></strong> <%= diffDays %>
-                days ago
-              </small>
-              <% } else if (diffHours > 1) { %>
-              <small class="text-muted"
-                >Created by <strong><%=item.username %></strong> <%= diffHours
-                %> hours ago
-              </small>
-              <% } else { %>
-              <small class="text-muted"
-                >Created by <strong><%=item.username %></strong> <%= minutes %>
-                minutes ago
-              </small>
-              <% } %>
-            </p>
+          <div class="card-header d-flex align-items-center">
+            <img
+              src="https://plus.unsplash.com/premium_photo-1664303028333-80fef943aea5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fHNhZCUyMGRvZ3xlbnwwfHwwfHx8MA%3D%3D"
+              alt="Profile Picture"
+              class="rounded-circle me-3"
+              style="width: 40px; height: 40px"
+            />
+            <div>
+              <p class="card-text mb-0">
+                <strong class="text-muted"><%= item.location %></strong>
+              </p>
+              <p class="card-text mb-0">
+                <% let postDate = new Date(item.createDate); let currentDate =
+                new Date(); let diffTime = Math.abs(currentDate - postDate); let
+                diffHours = Math.ceil(diffTime / (1000 * 60 * 60)); let diffDays
+                = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); let minutes =
+                Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60)); %> <%
+                if(diffDays > 1) { %>
+                <small class="text-muted"
+                  >Created by <strong><%= item.username %></strong> <%= diffDays
+                  %> days ago
+                </small>
+                <% } else if (diffHours > 1) { %>
+                <small class="text-muted"
+                  >Created by <strong><%= item.username %></strong> <%=
+                  diffHours %> hours ago
+                </small>
+                <% } else { %>
+                <small class="text-muted"
+                  >Created by <strong><%= item.username %></strong> <%= minutes
+                  %> minutes ago
+                </small>
+                <% } %>
+              </p>
+            </div>
           </div>
-
-          <!-- image slider start -->
           <div
-            id="carouselExampleControls<%= index %>"
+            id="carouselExampleControls-<%= index %>"
             class="carousel slide"
             data-bs-ride="carousel"
           >
             <div class="carousel-inner">
-              <% item.content.media_location.forEach((element, mediaIndex) => {
-              %>
-              <div
-                class="carousel-item <%= mediaIndex === 0 ? 'active' : '' %>"
-              >
-                <img src="<%=element %>" class="d-block w-100" alt="..." />
+              <% item.content.media_location.forEach((element, idx) => { %>
+              <div class="carousel-item <%= idx === 0 ? 'active' : '' %>">
+                <img
+                  src="/uploads/<%= element %>"
+                  class="d-block w-100"
+                  alt="..."
+                  style="width: 100%; height: 200px; object-fit: cover"
+                />
               </div>
               <% }) %>
             </div>
-            <% if(item.content.media_location.length > 1) { %>
+            <% if (item.content.media_location.length > 1) { %>
             <button
               class="carousel-control-prev"
               type="button"
-              data-bs-target="#carouselExampleControls<%= index %>"
+              data-bs-target="#carouselExampleControls-<%= index %>"
               data-bs-slide="prev"
             >
               <span
@@ -111,7 +92,7 @@
             <button
               class="carousel-control-next"
               type="button"
-              data-bs-target="#carouselExampleControls<%= index %>"
+              data-bs-target="#carouselExampleControls-<%= index %>"
               data-bs-slide="next"
             >
               <span
@@ -122,27 +103,24 @@
             </button>
             <% } %>
           </div>
-          <!-- image slider end -->
 
           <div class="card-body">
-            <h5 class="card-title"><%=item.title %></h5>
+            <h5 class="card-title"><%= item.title %></h5>
             <div id="artical-text-<%= index %>"></div>
             <script>
               document.addEventListener("DOMContentLoaded", function () {
                 // The rich text content passed from the server
-                let richTextContent = `<%= item.content.text %>`; // Ensure `item.content` contains the rich text content
+                let richTextContent = <%- JSON.stringify(item.content.text) %>; // Ensure `item.content.text` is correctly escaped as a string
+                console.log(richTextContent);
                 const maxChar = 1000;
                 if (richTextContent.length > maxChar) {
                   richTextContent =
                     richTextContent.substring(0, maxChar) + "...";
-                  console.log("inside if " + richTextContent);
                 }
 
-                // Create a temporary element to parse the HTML content
                 const tempElement = document.createElement("div");
                 tempElement.innerHTML = richTextContent;
 
-                // Extract text content
                 const textContent =
                   tempElement.textContent || tempElement.innerText;
 
@@ -151,8 +129,10 @@
                   "<p>" + textContent + "</p>";
               });
             </script>
+
             <p class="card-text">
-              <% item.tags.forEach((tag) => { %> #<%= tag %> <% }) %>
+              <strong>Tags</strong> <% item.tags.forEach((tag) => { %> #<%= tag
+              %> <% }) %>
             </p>
             <div class="card-footer">
               <% let updateDate = new Date(item.updateDate); let update_diffTime
@@ -184,7 +164,7 @@
                       id="myInput"
                       name="post_id"
                       class="form-control"
-                      value="<%=item.post_id %>"
+                      value="<%= item.post_id %>"
                       style="visibility: hidden"
                     />
                     <button type="submit" class="btn btn-info form-control">
@@ -202,7 +182,7 @@
                       id="myInput"
                       name="post_id"
                       class="form-control"
-                      value="<%=item.post_id %>"
+                      value="<%= item.post_id %>"
                       style="visibility: hidden"
                     />
                     <button type="submit" class="btn btn-danger form-control">
@@ -217,7 +197,21 @@
         </div>
       </div>
       <% }) %> <% } else { %>
-      <h2>Data not found</h2>
+      <div class="container text-center my-5">
+        <div class="row justify-content-center">
+          <div class="col-md-8">
+            <img
+              src="https://plus.unsplash.com/premium_photo-1664303028333-80fef943aea5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fHNhZCUyMGRvZ3xlbnwwfHwwfHx8MA%3D%3D"
+              alt="Sad Dog"
+              class="img-fluid mb-4 rounded-pill"
+            />
+            <h2 class="mb-3">Oops! No Data Found</h2>
+            <p class="lead">It seems like there are no posts available.</p>
+            <p class="lead mb-4">Why not be the first to share something?</p>
+            <a href="/createNewPost" class="btn btn-primary">Create New Post</a>
+          </div>
+        </div>
+      </div>
       <% } %>
     </div>
   </body>

@@ -2,11 +2,11 @@ const express = require("express");
 const router = express.Router();
 const verifyJWT = require("../middleware/verifyJWT");
 const authController = require("../controllers/authController");
-
 const ROLES_LIST = require("../config/roles_list");
 const verifyRoles = require("../middleware/verifyRoles");
+const upload = require("../middleware/uploadMiddleware");
 
-router.post("/register", authController.register);
+router.post("/register", upload, authController.register);
 router.post("/login", authController.login);
 router.get(
   "/users",

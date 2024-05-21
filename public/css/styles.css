@@ -1,0 +1,149 @@
+.row.mt-5 {
+  margin-top: 80px; /* Adjust the margin-top value according to your navbar height */
+}
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #f8f9fa;
+}
+* {
+  box-sizing: border-box;
+}
+fieldset {
+  border: none;
+  padding: 0;
+}
+legend {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+label {
+  margin-left: 5px;
+}
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  display: inline-block;
+  border: none;
+  background: #f1f1f1;
+}
+input[type="text"]:focus,
+input[type="password"]:focus {
+  background-color: #ddd;
+  outline: none;
+}
+hr {
+  border: 1px solid #f1f1f1;
+  margin-bottom: 25px;
+}
+button {
+  background-color: #04aa6d;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  opacity: 0.9;
+}
+button:hover {
+  opacity: 1;
+}
+.loginbtn {
+  padding: 14px 20px;
+  background-color: #f44336;
+}
+.loginbtn,
+.signupbtn {
+  float: left;
+  width: 50%;
+}
+.container {
+  padding: 16px;
+}
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+@media screen and (max-width: 300px) {
+  .cancelbtn,
+  .signupbtn {
+    width: 100%;
+  }
+}
+.tag-button {
+  flex: 1 1 auto;
+  max-width: 200px;
+  box-sizing: border-box;
+}
+.button-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.card {
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+.card-header {
+  /* background: linear-gradient(45deg, #8b41d9, #2575fc); */
+  background: linear-gradient(45deg, #7f7c82, #96b2e3);
+  color: #fff;
+  padding: 1rem;
+  border-bottom: none;
+}
+.card-header img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-right: 1rem;
+}
+.card-body {
+  padding: 2rem;
+}
+.card-footer {
+  background-color: #fff;
+  border-top: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+}
+.icon-button {
+  background: none;
+  border: none;
+  color: #6b4099;
+  font-size: 1.5rem;
+  transition: color 0.3s ease;
+  cursor: pointer;
+}
+.icon-button:hover {
+  color: #2575fc;
+}
+.carousel-item img {
+  border-radius: 10px;
+}
+.carousel-control-prev,
+.carousel-control-next {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+}
+.carousel-control-prev,
+.carousel-control-next,
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+  width: 40px;
+  height: 40px;
+}

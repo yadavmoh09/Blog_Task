@@ -7,97 +7,117 @@
     />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <style>
-      body {
-        margin: 10px;
-        padding: 5px;
+      .header-margin {
+        margin-top: 80px; /* Adjust the margin-top value according to your navbar height */
+      }
+      .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .card-header {
+        background-color: #f8f9fa;
+        border-bottom: none;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+      }
+      .card-body {
+        padding: 1.5rem;
+      }
+      .card-title {
+        color: #333;
+        font-weight: bold;
+      }
+      .card-text {
+        color: #555;
+      }
+      .carousel-item img {
+        width: 100%;
+        height: 400px; /* Fixed height for consistency */
+        object-fit: cover; /* Ensure the image covers the container without distortion */
+        border-radius: 10px; /* Optional: keep the border-radius for aesthetic purposes */
+      }
+      .carousel-control-prev,
+      .carousel-control-next {
+        background-color: rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+      }
+      .carousel-control-prev-icon,
+      .carousel-control-next-icon {
+        background-color: rgba(255, 255, 255, 0.5);
+        border-radius: 50%;
+      }
+      .carousel-control-prev,
+      .carousel-control-next,
+      .carousel-control-prev:hover,
+      .carousel-control-next:hover {
+        width: 40px;
+        height: 40px;
       }
     </style>
   </head>
   <body>
-    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#">
-          <img
-            src="https://www.w3schools.com/howto/img_avatar2.png"
-            alt="Logo"
-            style="width: 40px"
-            class="rounded-pill"
-          />
-        </a>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-              <a class="nav-link" href="/post/getAllPost/home"
-                >Home <span class="sr-only"></span
-              ></a>
-            </li>
-            <li class="nav-item active">
-              <a class="nav-link" href="/post/userPost"
-                >Personal Post <span class="sr-only"></span
-              ></a>
-            </li>
-            <li class="nav-item active">
-              <a class="nav-link" href="/post/userPost/getResponse"
-                >Create Post <span class="sr-only"></span
-              ></a>
-            </li>
-          </ul>
+    <%- include('partials/navbar') %> <% if (item && item.length > 0) { %> <%
+    item.forEach((info, index) => { %>
+    <div class="card mb-3">
+      <div class="header-margin card-header d-flex align-items-center">
+        <img
+          src="https://plus.unsplash.com/premium_photo-1664303028333-80fef943aea5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fHNhZCUyMGRvZ3xlbnwwfHwwfHx8MA%3D%3D"
+          alt="Profile Picture"
+          class="rounded-circle me-3"
+          style="width: 40px; height: 40px"
+        />
+        <div>
+          <% let postDate = new Date(info.createDate); let currentDate = new
+          Date(); let diffTime = Math.abs(currentDate - postDate); let diffHours
+          = Math.ceil(diffTime / (1000 * 60 * 60)); let diffDays =
+          Math.ceil(diffTime / (1000 * 60 * 60 * 24)); let minutes =
+          Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60)); %>
+          <p class="card-text mb-0">
+            <strong class="text-muted"><%= info.location %> </strong>
+          </p>
+          <p class="card-text mb-0">
+            <% if(diffDays > 1) { %>
+            <small class="text-muted"
+              >Created by <strong><%= info.username %></strong> <%= diffDays %>
+              days ago</small
+            >
+            <% } else if (diffHours > 1) { %>
+            <small class="text-muted"
+              >Created by <strong><%= info.username %></strong> <%= diffHours %>
+              hours ago</small
+            >
+            <% } else { %>
+            <small class="text-muted"
+              >Created by <strong><%= info.username %></strong> <%= minutes %>
+              minutes ago</small
+            >
+            <% } %>
+          </p>
         </div>
       </div>
-    </nav>
-    <% if (item.length>0) {%> <% item.forEach(info => {%>
-    <div class="card mb-3">
-      <div class="card-header">
-        <% let postDate = new Date(info.createDate); let currentDate = new
-        Date(); let diffTime = Math.abs(currentDate - postDate); let diffHours =
-        Math.ceil(diffTime / (1000 * 60 * 60)); let diffDays =
-        Math.ceil(diffTime / (1000 * 60 * 60 * 24)); let minutes =
-        Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60)); %>
-        <p class="card-text">
-          <strong class="text-muted"><%=info.location %> </strong>
-        </p>
-        <p class="card-text">
-          <% if(diffDays>1) {%>
-          <small class="text-muted"
-            >Created by <strong><%=info.username %></strong> <%= diffDays %>
-            days ago
-          </small>
-          <%} else if (diffHours > 1) { %>
-          <small class="text-muted"
-            >Created by <strong><%=info.username %></strong> <%= diffHours %>
-            hours ago
-          </small>
-          <% }else { %>
-          <small class="text-muted"
-            >Created by <strong><%=info.username %></strong> <%= minutes %>
-            minutes ago <% } %></small
-          >
-        </p>
-      </div>
 
-      <!-- image slider start -->
       <div
-        id="carouselExampleControls"
+        id="carouselExampleControls-<%= index %>"
         class="carousel slide"
         data-bs-ride="carousel"
       >
         <div class="carousel-inner">
-          <%info.content.media_location.forEach(element=>{%>
-          <div class="carousel-item active">
+          <% info.content.media_location.forEach((element, idx) => { %>
+          <div class="carousel-item <%= idx === 0 ? 'active' : '' %>">
             <img
-              src="<%=element %>"
+              src="/uploads/<%= element %>"
               class="d-block w-100"
               alt="..."
-              style="width: 100%; height: 200px; object-fit: cover"
             />
           </div>
-          <%})%>
+          <% }) %>
         </div>
-        <% if(info.content.media_location.length >1){%>
+        <% if(info.content.media_location.length > 1) { %>
         <button
           class="carousel-control-prev"
           type="button"
-          data-bs-target="#carouselExampleControls"
+          data-bs-target="#carouselExampleControls-<%= index %>"
           data-bs-slide="prev"
         >
           <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -106,7 +126,7 @@
         <button
           class="carousel-control-next"
           type="button"
-          data-bs-target="#carouselExampleControls"
+          data-bs-target="#carouselExampleControls-<%= index %>"
           data-bs-slide="next"
         >
           <span class="carousel-control-next-icon" aria-hidden="true"></span>
@@ -115,40 +135,57 @@
         <% } %>
       </div>
 
-      <!-- image slider end -->
-
       <div class="card-body">
-        <h5 class="card-title"><%=info.title %></h5>
-        <p class="card-text"><%=info.content.text%></p>
+        <h5 class="card-title"><%= info.title %></h5>
+        <div id="artical-text-<%= index %>"></div>
+        <script>
+          document.addEventListener("DOMContentLoaded", function () {
+            // The rich text content passed from the server
+            let richTextContent = <%= JSON.stringify(info.content.text) %>; // Ensure `item.content` contains the rich text content
+            const maxChar = 1000;
+
+            const tempElement = document.createElement("div");
+            tempElement.innerHTML = richTextContent;
+
+            const textContent =
+              tempElement.textContent || tempElement.innerText;
+
+            // Display the text content
+            document.getElementById("artical-text-<%= index %>").innerHTML =
+              "<p>" + textContent + "</p>";
+          });
+        </script>
         <p class="card-text">
-          <% info.tags.forEach((tag)=>{ %> #<%= tag %> <%})%>
+          <strong>Tags </strong>
+          <% info.tags.forEach((tag) => { %> #<%= tag %> <% }) %>
         </p>
         <div class="card-footer">
           <% let updateDate = new Date(info.updateDate); let update_diffTime =
           Math.abs(currentDate - updateDate); let update_diffHours =
           Math.ceil(update_diffTime / (1000 * 60 * 60)); let update_diffDays =
-          Math.ceil(update_diffTime / (1000 * 60 * 60 * 24));let update_minutes
+          Math.ceil(update_diffTime / (1000 * 60 * 60 * 24)); let update_minutes
           = Math.floor((update_diffTime % (1000 * 60 * 60)) / (1000 * 60)); %>
           <p class="card-text">
-            <% if(update_diffDays > 1 ) {%>
+            <% if(update_diffDays > 1) { %>
             <small class="text-muted"
-              >Updated post <%= update_diffDays %> days ago
-            </small>
-            <% }else if (diffHours > 1) { %>
-            <small class="text-muted"
-              >Updated post <%= update_diffHours %> hours ago
-            </small>
-            <% }else { %>
-            <small class="text-muted"
-              >Updated post <%= update_minutes%> minutes ago <% } %></small
+              >Updated post <%= update_diffDays %> days ago</small
             >
+            <% } else if (update_diffHours > 1) { %>
+            <small class="text-muted"
+              >Updated post <%= update_diffHours %> hours ago</small
+            >
+            <% } else { %>
+            <small class="text-muted"
+              >Updated post <%= update_minutes %> minutes ago</small
+            >
+            <% } %>
           </p>
         </div>
       </div>
     </div>
-
-    <%}); %> <%} else {%>
+    <% }) %> <% } else { %>
     <h2>Data not found</h2>
     <% } %>
+    <script src="/js/scripts.js"></script>
   </body>
 </html>

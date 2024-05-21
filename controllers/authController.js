@@ -6,9 +6,11 @@ const fsPromises = require("fs").promises;
 const path = require("path");
 const BlogDetails = require("../model/BlogDetails");
 const axios = require("axios");
+const isJSON = require("../utils/isJSON");
 
 exports.register = async (req, res) => {
   const UserDetail = req.body;
+  const profilePicture = req.files[0].filename;
   try {
     if (UserDetail.password !== UserDetail.password_repeat)
       return res.render("signUpPage", {
@@ -26,7 +28,6 @@ exports.register = async (req, res) => {
         message: "username already Exist",
       });
     const hashedPassword = await bcrypt.hash(UserDetail.password, 10);
-
     const user = new User({
       username: UserDetail.username,
       email: UserDetail.email,
@@ -35,12 +36,14 @@ exports.register = async (req, res) => {
       security_answer: UserDetail.security_answer,
       phone_number: UserDetail.phone_number,
       interested_in: UserDetail.interested_in,
+      media_location: profilePicture,
       user_location: UserDetail.user_location,
       password: hashedPassword,
     });
     await user.save();
-    res.redirect("/");
+    res.status(201).json({ message: "user registered successfully" });
   } catch (error) {
+    console.log(error);
     res.render("signUpPage", {
       message: "Internal server error",
     });
@@ -97,11 +100,19 @@ exports.login = async (req, res) => {
         "http://localhost:3500/post/getAllPost/login"
       );
       const data = response.data;
-      res.render("home", {
-        pageType: "home",
-        items: data,
-        datafound: data.length > 0,
-      });
+      if (isJSON(response)) {
+        res.render("home", {
+          pageType: "home",
+          items: data,
+          datafound: data.length > 0,
+        });
+      } else {
+        res.render("home", {
+          pageType: "home",
+          items: [],
+          datafound: false,
+        });
+      }
     } catch (err) {
       res.render("home", {
         pageType: "home",

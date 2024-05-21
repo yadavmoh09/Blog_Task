@@ -1,26 +1,25 @@
 const multer = require("multer");
-const { GridFsStorage } = require("multer-gridfs-storage");
 const path = require("path");
+const fs = require("fs");
 
-// Mongo URI
-const mongoURI =
-  "mongodb+srv://moh09yadav:I25d90fw6k5Psbne@cluster0.p9wgagt.mongodb.net/CompanyDB?retryWrites=true&w=majority&appName=Cluster0";
+// Ensure uploads directory exists
+const uploadDir = path.join(__dirname, "../public/uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
-// Create storage engine
-const storage = new GridFsStorage({
-  url: mongoURI,
-  file: (req, file) => {
-    return new Promise((resolve, reject) => {
-      const filename = `${Date.now()}-${file.originalname}`;
-      const fileInfo = {
-        filename: filename,
-        bucketName: "uploads",
-      };
-      resolve(fileInfo);
-    });
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname);
   },
 });
 
-const upload = multer({ storage });
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 1024 * 1024 * 10 }, // 10MB file size limit
+}).array("media_location", 10);
 
 module.exports = upload;

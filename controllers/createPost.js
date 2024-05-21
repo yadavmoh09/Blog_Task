@@ -4,6 +4,7 @@ const User = require("../model/User");
 const { v4: uuidv4 } = require("uuid");
 const http = require("http");
 const axios = require("axios");
+const isJSON = require("../utils/isJSON");
 
 // const router = express.Router();
 
@@ -15,7 +16,7 @@ const blogDetailSchema = require("../model/BlogDetails");
 const createPost = async (req, res) => {
   try {
     const body = req.body;
-    const files = [];
+    const files = req.files;
     if (body) {
       const cookies = req.cookies;
       if (!cookies?.jwt) return res.sendStatus(401);
@@ -23,12 +24,12 @@ const createPost = async (req, res) => {
       const userLogin = await User.findOne({ refreshToken });
       const currentUser = userLogin.username;
       const separetedTags = body.tags.split("#").map((tag) => tag.trim());
-      const mediaLocations = files.map((file) => file);
+      const mediaLocations = files.map((file) => file.filename);
 
       await blogDetailSchema.Post.create({
         username: currentUser,
         title: body.title,
-        content: { media_location: mediaLocations, text: body.text },
+        content: { media_location: mediaLocations, text: body.aritcal_text },
         post_id: uuidv4(),
         location: body.location,
         tags: separetedTags,
@@ -40,18 +41,16 @@ const createPost = async (req, res) => {
     res.status(400).send("Error creating documents");
   }
 };
-
 const getAllPost = async (req, res) => {
-  // const { username } = req.body;
-  // if (!username) {
-  //   console.error("Username is required");
-  //   return res.status(400).json({ error: "Username is required" });
-  // }
   const Operation = req.params.Operation;
   try {
     const userPosts = await blogDetailSchema.Post.find({});
     if (!userPosts || userPosts.length === 0) {
-      return res.status(404).json({ error: `No posts found` });
+      return res.render("home", {
+        pageType: "home",
+        items: userPosts,
+        datafound: false,
+      });
     }
     if (Operation === "home")
       return res.render("home", {
@@ -64,7 +63,6 @@ const getAllPost = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
 const getPostByID = async (req, res) => {
   const post_id = req.query.post_id;
   if (!post_id) return res.status(400).json({ error: "post Id required" });
@@ -87,12 +85,13 @@ const getPostByUserName = async (req, res) => {
     // username: userLogin.username,
     username: "yadavmoh91",
   });
-  if (!usrPost || usrPost.length === 0)
+  if (!usrPost || usrPost.length === 0) {
     return res.render("home", {
       pageType: "personal",
       items: usrPost,
       datafound: false,
     });
+  }
   if (operation === "getData") {
     return res.json(usrPost);
   }
@@ -100,81 +99,42 @@ const getPostByUserName = async (req, res) => {
 };
 const deletePostByID = async (req, res) => {
   try {
-    console.log("deletePostByID called");
-
     const post_id = req.body.post_id;
-    console.log("post_id:", post_id);
-
     const usrPost = await blogDetailSchema.Post.findOneAndDelete({
       post_id: post_id,
     });
-    console.log("Deleted Post:", usrPost);
-
-    if (!usrPost) {
-      console.log("Post not found");
-      return res.status(404).send("Post not found");
-    }
 
     const getData = async () => {
       try {
         const response = await axios.get(
           "http://localhost:3500/post/userPost/getData"
         );
-        return response.data;
+        return response;
       } catch (error) {
-        console.error("Error fetching data:", error.message);
         throw new Error(`Failed to fetch data: ${error.message}`);
       }
     };
 
-    const userData = await getData();
+    const response = await getData();
 
-    console.log("User Data:", userData);
-
-    res.render("home", {
-      pageType: "personal",
-      items: userData,
-      datafound: userData && userData.length > 0,
-    });
+    if (isJSON(response)) {
+      res.render("home", {
+        pageType: "personal",
+        items: response.data,
+        datafound: true,
+      });
+    } else {
+      res.render("home", {
+        pageType: "personal",
+        items: [],
+        datafound: false,
+      });
+    }
   } catch (error) {
-    console.error("Error in deletePostByID:", error);
+    console.log(error);
     res.status(500).send("An error occurred");
   }
 };
-
-// const deletePostByID = async (req, res) => {
-//   try {
-//     console.log("deletePostByID called");
-
-//     const post_id = req.body.post_id;
-//     console.log("post_id:", post_id);
-
-//     const usrPost = await blogDetailSchema.Post.findOneAndDelete({
-//       post_id: post_id,
-//     });
-//     console.log("Deleted Post:", usrPost);
-
-//     if (!usrPost) {
-//       console.log("Post not found");
-//       return res.status(404).send("Post not found");
-//     }
-
-//     const response = await nodeFetch(
-//       "http://localhost:3500/post/getPostByUserName/getData"
-//     );
-//     const userData = await response.json();
-//     console.log("User Data:", userData);
-
-//     res.render("home", {
-//       pageType: "personal",
-//       items: userData,
-//       datafound: userData && userData.length > 0,
-//     });
-//   } catch (error) {
-//     console.error("Error in deletePostByID:", error);
-//     res.status(500).send("An error occurred");
-//   }
-// };
 const updatePost = async (req, res) => {
   const { post_id } = req.body;
   if (!post_id) return res.status(400).json({ error: "post_id required" });
@@ -202,40 +162,6 @@ const updatePost = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
-// const deleteAllPost = async (req, res) => {
-//   const { username } = req.body;
-//   try {
-//     if (!username) return res.status(400).json({ error: "user name required" });
-//     const foundPost = await blogDetailSchema.Post.find({ username });
-//     if (!foundPost || foundPost.length === 0)
-//       return res.status(400).json({ error: `post not found for ${username}` });
-//     const numberOfPostFound = foundPost.length;
-//     // If posts are found, delete each post
-//     if (foundPost.length > 0) {
-//       await Promise.all(
-//         postDetails.map(async (post) => {
-//           const commentDetails = await blogDetailSchema.Comment.find({
-//             post_id: post.post_id,
-//           }).exec();
-
-//           await Promise.all(
-//             commentDetails.map(async (comment) => {
-//               await comment.deleteOne();
-//             })
-//           );
-//           await post.deleteOne();
-//         })
-//       );
-//     }
-//     res.status(200).json({
-//       message: `${numberOfPostFound} post and related comments deleted successfully`,
-//     });
-//   } catch (error) {
-//     res.status(500).json({ error: error });
-//   }
-// };
-
 const deleteAllPost = async (req, res) => {
   const { username } = req.body;
   try {

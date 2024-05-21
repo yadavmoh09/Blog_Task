@@ -28,6 +28,7 @@ const userSchema = new mongoose.Schema({
       required: false,
     },
   },
+  media_location: { type: String, required: false },
   security_question: {
     type: String,
     required: true,

@@ -5,10 +5,9 @@ const verifyJWT = require("../middleware/verifyJWT");
 const ROLES_LIST = require("../config/roles_list");
 const verifyRoles = require("../middleware/verifyRoles");
 const upload = require("../middleware/uploadMiddleware");
-
 router.post(
   "/",
-  upload.array("media_location", 10),
+  upload,
   // verifyJWT,
   // verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor),
   registerController.createPost
