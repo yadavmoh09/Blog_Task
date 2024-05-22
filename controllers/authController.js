@@ -30,8 +30,10 @@ exports.register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(UserDetail.password, 10);
     const user = new User({
       username: UserDetail.username,
+      fullname: UserDetail.fullname,
       email: UserDetail.email,
       roles: UserDetail.roles,
+      bio: UserDetail.bio,
       security_question: UserDetail.security_question,
       security_answer: UserDetail.security_answer,
       phone_number: UserDetail.phone_number,
@@ -128,29 +130,64 @@ exports.login = async (req, res) => {
 };
 
 exports.getUsers = async (req, res) => {
-  const users = await User.find();
-  console.log(users);
+  const users = await User.find({});
   if (users.length === 0) {
     return res.status(404).json({ message: "No users found." });
   }
-  res.status(200).json(users);
+  res.render("allUsersDetails", { users: users, currentUser: "yadavmoh91" });
 };
-
 exports.UpdateUsers = async (req, res) => {
-  const { username } = req.body;
-  const userDetail = await User.findOne({ username }).exec();
-  if (!userDetail) return res.status(204).json({ message: " not found.." });
-  if (req.body?.email) userDetail.email = req.body.email;
-  if (req.body?.password) {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    userDetail.password = hashedPassword;
+  const body = req.body;
+
+  if (!body || Object.keys(body).length === 0) {
+    return res.status(400).json({ message: "Please provide the value" });
   }
-  if (req.body?.phone_number) userDetail.phone_number = req.body.phone_number;
-  if (req.body?.user_location)
-    userDetail.user_location = req.body.user_location;
-  userDetail.updateDate = Date.now();
-  res.json(userDetail);
-  userDetail.save();
+  const { username } = body;
+
+  try {
+    const userDetail = await User.findOne({ username }).exec();
+    if (!userDetail) {
+      return res.status(404).json({ message: "User not found." });
+    }
+    const operation = req.params.operation;
+
+    if (body.followers !== undefined) {
+      if (operation === "add") {
+        userDetail.followers += body.followers;
+        userDetail.followersList.push(body.followerId);
+      } else {
+        userDetail.followers -= body.followers;
+        userDetail.followersList = userDetail.followersList.filter(
+          (item) => item !== body.followerId
+        );
+      }
+
+      await userDetail.save();
+      return res.status(200).json({ message: "follower added" });
+    }
+    if (body.likes !== undefined) {
+      userDetail.likes += body.likes;
+      await userDetail.save();
+      return res.status(200).json({ message: "Likes added" });
+    }
+
+    if (body.email) userDetail.email = body.email;
+    if (body.password) {
+      const hashedPassword = await bcrypt.hash(body.password, 10);
+      userDetail.password = hashedPassword;
+    }
+    if (body.phone_number) userDetail.phone_number = body.phone_number;
+    if (body.user_location) userDetail.user_location = body.user_location;
+
+    userDetail.updateDate = Date.now();
+
+    await userDetail.save();
+    res.status(200).json({ message: "User updated successfully." });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Internal server error.", error: error.message });
+  }
 };
 
 exports.DeleteUser = async (req, res) => {

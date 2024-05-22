@@ -10,14 +10,14 @@ router.post("/register", upload, authController.register);
 router.post("/login", authController.login);
 router.get(
   "/users",
-  verifyJWT,
-  verifyRoles(ROLES_LIST.Admin),
+  // verifyJWT,
+  // verifyRoles(ROLES_LIST.Admin),
   authController.getUsers
 );
-router.put(
-  "/UpdateUsers",
-  verifyJWT,
-  verifyRoles(ROLES_LIST.Admin),
+router.post(
+  "/UpdateUsers/:operation?",
+  // verifyJWT,
+  // verifyRoles(ROLES_LIST.Admin),
   authController.UpdateUsers
 );
 router.delete(

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Users</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
+      .user-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .user-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      }
+      .profile-pic {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border: 3px solid #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .user-info {
+        margin-left: 1rem;
+      }
+      .card-footer {
+        background-color: #fff;
+        border-top: none;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+      }
+      .icon-button {
+        background: none;
+        border: none;
+        color: #c9d33a;
+        font-size: 1.5rem;
+        transition: color 0.3s ease;
+      }
+      .icon-button:hover {
+        color: #2575fc;
+      }
+      .modal-header {
+        background: linear-gradient(45deg, #6a11cb, #2575fc);
+        color: #fff;
+      }
+      .modal-footer {
+        border-top: none;
+      }
+    </style>
+  </head>
+  <body>
+    <%- include('partials/navbar') %>
+    <!-- Main Content -->
+    <div class="container mt-5">
+      <div class="row row-cols-1 row-cols-md-3 g-4">
+        <!-- User Card 1 -->
+        <% users.forEach((user,index)=>{%>
+        <div class="col">
+          <div class="card user-card h-100 shadow-sm">
+            <div class="card-body d-flex align-items-center">
+              <img
+                src="/uploads/<%=user.media_location %>"
+                alt="Profile Picture"
+                class="rounded-circle profile-pic"
+              />
+              <div class="user-info">
+                <h5 class="card-title"><%=user.username %></h5>
+                <p class="card-text">
+                  <i class="fas fa-users"></i> Followers:
+                  <span id="followers_count_<%=user.username %>"
+                    ><%=user.followers%></span
+                  >
+                </p>
+                <p class="card-text">
+                  <i class="fas fa-heart"></i> Total Likes:
+                  <span id="likes_count_<%=user.username %>"
+                    ><%=user.likes%></span
+                  >
+                </p>
+                <p class="card-text">
+                  <% const givenDate = new Date(user.createDate); const day =
+                  String(givenDate.getDate()).padStart(2, '0'); const month =
+                  String(givenDate.getMonth() + 1).padStart(2, '0'); const year
+                  = givenDate.getFullYear(); const formattedDate =
+                  `${day}-${month}-${year}`; %>
+                  <i class="fas fa-calendar-alt"></i> Created: <%= formattedDate
+                  %>
+                </p>
+              </div>
+            </div>
+            <div class="card-footer">
+              <%if (user.followersList.includes(currentUser)) {%>
+              <button
+                class="icon-button"
+                title="Follow"
+                onclick="addFollower('<%=user.username%>')"
+              >
+                <i class="fas fa-user-plus"></i>
+              </button>
+              <% }else{ %><button
+                class="icon-button"
+                title="UnFollow"
+                onclick="removeFollower('<%=user.username%>')"
+              >
+                <i class="fas fa-user-minus"></i>
+              </button>
+              <% } %>
+
+              <button
+                class="icon-button"
+                title="View Posts"
+                id="viewButton"
+                onclick="viewPost('<%=user.username%>')"
+                ;
+              >
+                <i class="fas fa-th-list"></i>
+              </button>
+              <button
+                class="icon-button"
+                title="View Profile"
+                data-bs-toggle="modal"
+                data-bs-target="#userModal<%=index %>"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <%})%>
+      </div>
+    </div>
+    <!-- User Modal 1 -->
+    <% users.forEach((user,index)=>{%>
+    <div
+      class="modal fade"
+      id="userModal<%=index %>"
+      tabindex="-1"
+      aria-labelledby="userModalLabel<%=index %>"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="userModalLabel1">
+              <%=user.username %>
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="text-center">
+              <img
+                src="/uploads/<%=user.media_location %>"
+                alt="Profile Picture"
+                class="rounded-circle mb-3 mx-auto d-block"
+                style="max-width: 200px"
+              />
+            </div>
+            <p><strong>Name:</strong> <%=user.fullname %></p>
+            <p>
+              <strong>Followers: </strong>
+              <span id="model_followers_count_<%=user.username %>"
+                ><%=user.followers %></span
+              >
+            </p>
+            <p>
+              <strong>Total Likes: </strong
+              ><span id="model_likes_count_<%=user.username %>"
+                ><%=user.likes %></span
+              >
+            </p>
+            <% const givenDate = new Date(user.createDate); const day =
+            String(givenDate.getDate()).padStart(2, '0'); const month =
+            String(givenDate.getMonth() + 1).padStart(2, '0'); const year =
+            givenDate.getFullYear(); const formattedDate =
+            `${day}-${month}-${year}`; %>
+            <p><strong>Account Created:</strong> <%=formattedDate%></p>
+            <p><strong>Bio:</strong> <%=user.bio %></p>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <%})%>
+  </body>
+  <script>
+    async function addFollower(username) {
+      const response = await axios.post("/auth/UpdateUsers/add", {
+        followers: 1,
+        followerId: "yadavmoh94",
+        username: username,
+      });
+      if (response.status === 200) {
+        const card_FollowerCount = document.getElementById(
+          `followers_count_${username}`
+        );
+        const model_FollowerCount = document.getElementById(
+          `model_followers_count_${username}`
+        );
+        const followerCount = card_FollowerCount.textContent;
+        card_FollowerCount.innerText = parseInt(followerCount) + 1;
+        model_FollowerCount.innerHTML = parseInt(followerCount) + 1;
+      }
+    }
+    function viewPost(username) {
+      console.log("view button clicked ", username);
+
+      window.location.href = `/post/userPost/home/${username}`;
+    }
+
+    async function removeFollower(username) {
+      const response = await axios.post("/auth/UpdateUsers/remove", {
+        followers: 1,
+        followerId: "yadavmoh94",
+        username: username,
+      });
+      if (response.status === 200) {
+        const card_FollowerCount = document.getElementById(
+          `followers_count_${username}`
+        );
+        const model_FollowerCount = document.getElementById(
+          `model_followers_count_${username}`
+        );
+        const followerCount = card_FollowerCount.textContent;
+        card_FollowerCount.innerText = parseInt(followerCount) - 1;
+        model_FollowerCount.innerHTML = parseInt(followerCount) - 1;
+      }
+    }
+  </script>
+</html>

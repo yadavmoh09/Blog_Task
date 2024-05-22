@@ -73,6 +73,7 @@ const getPostByID = async (req, res) => {
 };
 const getPostByUserName = async (req, res) => {
   const operation = req.params.operation;
+  const userName = req.params.username;
 
   // const cookies = req.cookies;
   // if (!cookies?.jwt) return res.sendStatus(401);
@@ -82,8 +83,7 @@ const getPostByUserName = async (req, res) => {
   // console.log(userLogin.username);
 
   const usrPost = await blogDetailSchema.Post.find({
-    // username: userLogin.username,
-    username: "yadavmoh91",
+    username: userName,
   });
   if (!usrPost || usrPost.length === 0) {
     return res.render("home", {
@@ -94,8 +94,14 @@ const getPostByUserName = async (req, res) => {
   }
   if (operation === "getData") {
     return res.json(usrPost);
+  } else if (operation === "home") {
+    return res.render("home", {
+      pageType: "home",
+      items: usrPost,
+      datafound: true,
+    });
   }
-  res.render("home", { pageType: "personal", items: usrPost, datafound: true });
+  res.render("home", { pageType: operation, items: usrPost, datafound: true });
 };
 const deletePostByID = async (req, res) => {
   try {
